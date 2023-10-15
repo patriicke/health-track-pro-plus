@@ -1,18 +1,22 @@
 const sequelize = require("../config/db");
 const { DataTypes } = require('sequelize');
 
-const Patient = sequelize.define('patients', {
-    fullName: {
+const Record = sequelize.define('records', {
+    heartRate: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    nationalId: {
-        type: DataTypes.STRING(16),
-        allowNull: false
-    },
-    frequentSickness: {
+    bodyTemperature: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    patientId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'patients',
+            key: 'id'
+        }
     },
     status: {
         type: DataTypes.ENUM('active', 'inactive', 'deleted'),
@@ -24,11 +28,11 @@ const Patient = sequelize.define('patients', {
     timestamps: true,
     underscored: true,
     freezeTableName: true,
-    tableName: 'patients',
+    tableName: 'records',
 });
 
 (async() => {
     await sequelize.sync({ force: false });
 })();
 
-module.exports = Patient;
+module.exports = Record;
