@@ -33,7 +33,7 @@ const App: React.FC = () => {
 
   const options = {
     title: {
-      text: "Heart Beat"
+      text: "Heart Beat & Temperature"
     },
     tooltip: {
       trigger: "axis"
@@ -67,13 +67,11 @@ const App: React.FC = () => {
       {
         name: "Heart Beat",
         type: "line",
-        stack: "Total",
         data: data.map((item) => item.heartRate)
       },
       {
         name: "Temperature",
         type: "line",
-        stack: "Total",
         data: data.map((item) => item.bodyTemperature)
       }
     ]
