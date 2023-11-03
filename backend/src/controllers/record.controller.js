@@ -14,6 +14,7 @@ const recordController = {
                 data: newRecord
             });
         } catch (error) {
+            console.log(error.message)
             res.status(500).json({ message: "Internal Server Error: " + error.message, data: null })
         }
     },

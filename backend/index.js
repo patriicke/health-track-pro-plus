@@ -2,9 +2,11 @@ const express = require("express")
 const router = require("./src/routers")
 const app = express()
 const dbConnection = require("./src/config/db");
+const cors = require("cors")
 
 const port = 5050
 
+app.use(cors())
 app.use(express.json())
 app.use("/api/v1", router)
 

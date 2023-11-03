@@ -1,16 +1,45 @@
-import React from "react";
-import ReactECharts, { EChartsOption } from "echarts-for-react";
+import React, { useEffect, useState } from "react";
+import ReactECharts from "echarts-for-react";
+import axios from "axios";
+
+type Data = {
+  bodyTemperature: number;
+  heartRate: number;
+  patientId: number;
+  createdAt: string;
+};
 
 const App: React.FC = () => {
-  const options: EChartsOption = {
+  const [data, setData] = useState<Data[]>([]);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:5050/api/v1/records");
+      const { data } = await response.data;
+      setData(data);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(() => {
+      fetchData();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const options = {
     title: {
       text: "Heart Beat"
     },
     tooltip: {
-      trizgger: "axis"
+      trigger: "axis"
     },
     legend: {
-      data: ["Rate"]
+      data: ["Heart Beat", "Temperature"]
     },
     grid: {
       left: "3%",
@@ -26,17 +55,26 @@ const App: React.FC = () => {
     xAxis: {
       type: "category",
       boundaryGap: false,
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+      data: data.map((record) => {
+        const time = new Date(record.createdAt);
+        return time.toLocaleTimeString();
+      })
     },
     yAxis: {
       type: "value"
     },
     series: [
       {
-        name: "Rate",
+        name: "Heart Beat",
         type: "line",
         stack: "Total",
-        data: [86, 70, 92, 87, 92, 78, 90]
+        data: data.map((item) => item.heartRate)
+      },
+      {
+        name: "Temperature",
+        type: "line",
+        stack: "Total",
+        data: data.map((item) => item.bodyTemperature)
       }
     ]
   };
