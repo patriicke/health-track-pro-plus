@@ -1,11 +1,23 @@
 #include <OneWire.h>
+#include <DallasTemperature.h>
 #define samp_siz 4
 #define rise_threshold 5
+
+#define ONE_WIRE_BUS 3
+#define samp_siz 10  // Adjust the size as needed
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+int sensorPin = A0;
+
+float offsetCorrection = 4.5;
+
 OneWire ds(2);
 byte addr[8];  // To hold 64-bit ROM Codes of DS18B20
 byte data[9];  // Buffer to hold data coming from DS18B20
 float celsius;
-int sensorPin = A0;
+
 void setup() {
   Serial.begin(9600);
   ds.reset();
@@ -49,7 +61,7 @@ void loop() {
           Serial.print("Heart Rate: ");
           Serial.print(print_value);
           Serial.print(" ");
-          probe();  // Call the probe function to print the temperature
+          temperature();
         }
         third = second;
         second = first;
@@ -64,20 +76,9 @@ void loop() {
   }
 }
 
-void probe() {
-  //----------------------------
-  ds.reset();       // Bring 1-Wire into the idle state
-  ds.select(addr);  // Select the DS18B20 with address addr
-  ds.write(0x44);   // Start temperature conversion
-  delay(1000);      // Wait for conversion to complete
-  //---------------------------
-  ds.reset();
-  ds.select(addr);         // Select the desired DS18B20
-  ds.write(0xBE);          // Read Scratchpad Memory (9 bytes)
-  ds.read_bytes(data, 9);  // Data comes from DS18B20 and is saved into the buffer data[8]
-  //---------------------------------
-  int16_t raw = (data[1] << 8) | data[0];  // Combine data bytes (12-bit resolution)
-  celsius = (float)raw * 0.0625;           // Adjust for 12-bit resolution (0.0625 degrees Celsius per bit)
-  Serial.print("Temperature: ");
-  Serial.println(celsius);
+void temperature() {
+  sensors.requestTemperatures();
+  float temperatureC = sensors.getTempCByIndex(0) + 7 + offsetCorrection;
+  Serial.print(" Temperature: ");
+  Serial.println(temperatureC, 2);
 }

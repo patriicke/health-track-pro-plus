@@ -2,7 +2,15 @@ import serial
 import aiohttp
 import asyncio
 
-ser = serial.Serial('/dev/cu.usbmodem2017_2_251', 9600)
+ser = serial.Serial(port='/dev/cu.usbmodem2017_2_251', 
+                    baudrate=9600,
+                    parity=serial.PARITY_NONE,
+                    stopbits=serial.STOPBITS_ONE,
+                    bytesize=serial.EIGHTBITS,
+                    timeout=1
+                    )
+
+ser.flush()
 
 async def post_data(temperature, heart_rate, patientId):
     print(temperature, heart_rate, patientId)
